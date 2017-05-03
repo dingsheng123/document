@@ -61,3 +61,11 @@
 </configuration>
 ```
 
+
+
+#### Java引用
+
+```
+private static final Logger LOG = LogManager.getLogger(StudentDaoTest.class);
+```
+
