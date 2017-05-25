@@ -81,6 +81,49 @@ SqlSessionFactory 一旦被创建就应该在应用运行期间一直存在，�
 
 
 
+#### 主要构件及其相互关系
+
+从mybatis代码实现的角度来看，mybatis的核心部件有一下几个：
+
+1. SqlSession作为mybatis工作的主要顶层API，表示和数据库交互的回话，完成必要数据库的增删改查功能
+2. Executor作为mybatis的执行器，是mybatis调度的核心，负责SQL语句的生成和查询缓存的维护
+3. statementHandler封装了JDBC statement操作，负责对JDBC statement的操作，如设置参数、将statement结果集转换成List集合
+4. parameterHandler负责对用户传递的参数转换成JDBC Statement所需要的参数
+5. ResultSetHandler复制将JDBC返回的ResultSet结果集对象转换成list类型的集合
+6. TypeHandler负责Java数据类型和JDBC数据类型之间的映射和转换
+7. MappedStatement 维护了一条<select|update|delete|insert>节点的封装
+8. sqlsource负责根据用户传递的parameterObject，动态的生成SQL语句，将信息封装到BoundSql对象中，并返回
+9. BoundSql表示动态生成的Sql语句已经相应的参数信息
+10. Configuration：mybatis所有的配置信息都维持在Configuration对象之中。
+
+
+
+
+
+
+#### mybatis XML配置文件的层次结构
+
+这些层次结构是不能颠倒顺序的，否则，在解析XML文件的时候会出现异常
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>   <!--配置-->
+	<properties/>	<!--属性-->
+  	<setting/>	<!--设置-->
+  	<typeAliases/>	<!--类型命名-->
+  	<typeHandlers/>	<!--类型处理器-->
+  	<objectFactiory/>	<!--对象工厂-->
+  	<plugins/>	<!--插件-->
+  	<environments>	<!--配置环境-->
+    	<environment>	<!--环境变量-->
+      		<transactionManager/>	<!--事务管理器-->
+          	<datasource/>	<!--数据源-->
+       	</environment>
+    </environments>
+  	<databaseIdProvider/>	<!--数据库厂商标识-->
+  	<mappers/>	<!--映射器-->
+</configuration>
+```
 
 
 
