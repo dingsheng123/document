@@ -228,19 +228,19 @@
 
 10. 排序
 
-   > use test
-   >
-   > db.dropDatabase()
-   >
-   > use test
-   >
-   > db.test.insertMany([{name:'aaa', age:1},{name:'aaa',age:2},{name:'bbb',age:1},{name:'bbb',age:2}])
-   >
-   > ​
-   >
-   >  -- 按照age大小倒序排列:1为正序，-1为倒序   (第一个{}放where条件，为空表示返回集合中的所有文档)
-   >
-   > db.test.find({}).sort({age:-1})
+  > use test
+  >
+  > db.dropDatabase()
+  >
+  > use test
+  >
+  > db.test.insertMany([{name:'aaa', age:1},{name:'aaa',age:2},{name:'bbb',age:1},{name:'bbb',age:2}])
+  >
+  > ​
+  >
+  >  -- 按照age大小倒序排列:1为正序，-1为倒序   (第一个{}放where条件，为空表示返回集合中的所有文档)
+  >
+  > db.test.find({}).sort({age:-1})
 
 11. 索引
 
@@ -383,7 +383,7 @@
 
    + MongoMain.java
 
-     ```
+     ```java
      package com.demo;
 
      import com.mongodb.Block;
@@ -445,3 +445,4 @@
      ```
 
      ​
+
