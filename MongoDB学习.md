@@ -9,7 +9,7 @@
 3. 进入d:\java\MongoDB\bin目录，以管理员身份执行cmd
 4. 输入一下命令：
 
-> mongod --dbpath "d:\java\MongoDB\data\db" --logpath "d:\java\MongoDB\logs\" --install --serviceName "MongoDB"
+> mongod --dbpath "d:\java\MongoDB\data\db" --logpath "d:\java\MongoDB\logs\MongoDB.log"  --auth  --install --serviceName "MongoDB"
 
 5. 启动mongodb服务：
 
@@ -23,7 +23,26 @@
 
 经过以上步骤，mongodb安装成功。
 
+7. 设置用户名和密码
 
+   > use admin
+   > db.createUser({
+   >
+   > user: "root",
+   >
+   > pwd:"root",
+   >
+   > roles: [{role: "root", db: "admin"}]
+   >
+   > });
+   >
+   >  
+   >
+   > --下次登录需要验证时先进admin数据库，然后输入以下命令
+   >
+   > db.auth("root","root")
+
+   ​
 
 #### 2. MongoDB可视化工具
 
@@ -209,19 +228,19 @@
 
 10. 排序
 
-    > use test
-    >
-    > db.dropDatabase()
-    >
-    > use test
-    >
-    > db.test.insertMany([{name:'aaa', age:1},{name:'aaa',age:2},{name:'bbb',age:1},{name:'bbb',age:2}])
-    >
-    > ​
-    >
-    >  -- 按照age大小倒序排列:1为正序，-1为倒序   (第一个{}放where条件，为空表示返回集合中的所有文档)
-    >
-    > db.test.find({}).sort({age:-1})
+   > use test
+   >
+   > db.dropDatabase()
+   >
+   > use test
+   >
+   > db.test.insertMany([{name:'aaa', age:1},{name:'aaa',age:2},{name:'bbb',age:1},{name:'bbb',age:2}])
+   >
+   > ​
+   >
+   >  -- 按照age大小倒序排列:1为正序，-1为倒序   (第一个{}放where条件，为空表示返回集合中的所有文档)
+   >
+   > db.test.find({}).sort({age:-1})
 
 11. 索引
 
@@ -236,3 +255,193 @@
     >  -- 为age创建索引，1为升序，-1为倒序
     >
     > db.test.ensureIndex({age:1})
+
+
+
+
+
+#### 4. MongoDB role类型说明
+
+1. 数据库用户角色
+   + **read** : 授予用户只读数据的权限
+   + **readWrite** : 授予用户读写数据的权限
+2. 数据库管理角色
+   + **dbAdmin** : 在当前数据库中执行管理操作
+   + **dbOwner** : 在当前数据库中执行任意操作
+   + **userAdmin** : 在当前数据库中管理用户
+3. 备份和还原角色
+   + **backup** 
+   + **restore** 
+4. 跨库角色
+   + **readAnyDatabase** : 授予在所有数据库上读取数据的权限
+   + **readWriteAnyDatabase** : 授予在所有数据库上读写数据的权限
+   + **userAdminAnyDatabase** : 授予在所有数据库上管理用户的权限
+   + **dbAdminAnyDatabase** : 授予管理所有数据库的权限
+5. 集群管理角色
+   - **clusterAdmin** : 授予管理集群的最高权限
+   - **clusterManager** : 授予管理和监控集群的权限
+   - **clusterMonitor** : 授予监控集群的权限，对监控工具具有readonly的权限
+   - **hostManager** : 管理server
+
+
+
+#### 5. Java 连接 MongoDB
+
+1. 为数据库设置用户权限：role 为 dbOwner   数据库为test，collection为test
+
+   >use test
+   >
+   >db.createUser({
+   >
+   >​	user: "root",
+   >
+   >​	pwd: "root",
+   >
+   >​	roles: [{ 
+   >
+   >​		role: "dbOwner,
+   >
+   >​		db: "test"
+   >
+   >​	}]
+   >
+   >})
+
+2.  引用jar包为： mongo-java-driver
+
+3. 具体代码
+
+   + MongoManager.java
+
+     ```java
+     package com.demo;
+
+     import com.mongodb.*;
+     import com.mongodb.client.MongoDatabase;
+
+     import java.util.Arrays;
+     import java.util.List;
+
+     public class MongoManager {
+
+         //服务器地址
+         private static final String SERVER = "127.0.0.1";
+
+         //端口号
+         private static final int PORT = 27017;
+
+         //数据库名
+         private static final String DB_NAME = "test";
+
+         //用户名
+         private static final String USERNAME = "root";
+
+         //密码
+         private static final String PASSWORD = "root";
+
+         private static MongoClient mongoClient = null;
+
+         /**
+          * 初始化连接池
+          */
+         private MongoManager() {
+
+             init();
+         }
+
+         /**
+          * 获取MongoClient实例
+          * @return
+          */
+         private static MongoClient getInstance() {
+             if (mongoClient == null) {
+                 init();
+             }
+             return mongoClient;
+         }
+
+         /**
+          * 初始化连接池
+          */
+         private static void init() {
+             MongoClientOptions clientOptions = new MongoClientOptions.Builder().connectionsPerHost(100).threadsAllowedToBlockForConnectionMultiplier(200).build();
+             List<MongoCredential> lstCredentials = Arrays.asList(MongoCredential.createCredential(USERNAME, DB_NAME, PASSWORD.toCharArray()));
+             mongoClient = new MongoClient(new ServerAddress(SERVER), lstCredentials, clientOptions);
+         }
+
+         /**
+          * 获取数据库
+          * @return
+          */
+         public static MongoDatabase getDatabase() {
+
+             return getInstance().getDatabase(DB_NAME);
+         }
+
+     }
+     ```
+
+   + MongoMain.java
+
+     ```
+     package com.demo;
+
+     import com.mongodb.Block;
+     import com.mongodb.MongoClient;
+     import com.mongodb.client.FindIterable;
+     import com.mongodb.client.MongoCollection;
+     import com.mongodb.client.MongoDatabase;
+     import org.bson.Document;
+
+     import java.util.Arrays;
+
+     public class MongoDBMain {
+         public static void main(String[] args) {
+             MongoCollection<Document> collection = MongoManager.getDatabase().getCollection("test");
+
+             //clean collection data at first
+             collection.drop();
+             System.out.println("drop collection successfully...");
+
+             //insert data
+             Document document1 = new Document("name", "aaa").append("age", 20).append("sex", "male");
+             Document document2 = new Document("name", "bbb").append("age", 21).append("sex", "female");
+             Document document3 = new Document("name", "ccc").append("age", 22).append("sex", "male");
+             Document document4 = new Document("name", "ddd").append("age", 23).append("sex", "male");
+             Document document5 = new Document("name", "eee").append("age", 24).append("sex", "female");
+
+             collection.insertMany(Arrays.asList(document1, document2, document3, document4, document5));
+
+             //find all data
+             FindIterable<Document> iterable = collection.find();
+             printResult("find all data", iterable);
+
+             printResult("find one data", collection.find(new Document("name", "aaa")));
+
+             //find the data(age > 22)
+     //        printResult("find the data(age > 22)", collection.find(new Document(gt("age", 22))));
+
+
+         }
+
+         /**
+          * print data
+          * @param description
+          * @param iterable
+          */
+         public static void printResult(String description, FindIterable<Document> iterable) {
+             System.out.println(description);
+             iterable.forEach(new Block<Document>() {
+                 @Override
+                 public void apply(Document document) {
+                     System.out.println(document);
+                 }
+             });
+             System.out.println("*****************");
+             System.out.println();
+         }
+     }
+
+     ```
+
+     ​
