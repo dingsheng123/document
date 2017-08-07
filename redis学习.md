@@ -10,9 +10,53 @@
 
 > redis-server.exe redis.windows.conf
 
+然后启动一个新的cmd窗口，原来的不能关闭，进入redis目录下，输入以下命令：
+
+> redis-cli.exe -h 127.0.0.1 -p 6379
 
 
-#### 2. redis的数据类型
+
+**PS** : 
+
+连接本地redis命令
+
+> redis-cli
+
+连接远程redis命令(host为服务器地址，port为端口号，password为密码)
+
+> redis-cli -h host -p port -a password
+
+
+
+#### 2. redis设置密码
+
+修改redis安装目录下的 redis.windows.conf文件，修改 requirepass  参数后的密码，如将密码改为root
+
+> requirepass root
+
+然后重启redis，执行redis命令
+
+>redis-cli -h 127.0.0.1 -p 6379
+>
+>-- 输入其他命令会有报错信息  (error) ERR operation not permitted
+>
+>--输入授权命令即可：
+>
+>auth root
+>
+> 
+>
+>-- 在redis中查看密码
+>
+>config get requirepass
+>
+>-- 在redis中设置密码（临时的，重启后密码失效）
+>
+>config set requirepass password
+
+
+
+#### 3. redis的数据类型
 
 redis支持5中数据类型：string（字符串），hash（哈希），list（列表），set（集合），zset（sorted set,有序集合）
 
