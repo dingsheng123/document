@@ -38,7 +38,7 @@
 >
 > --停止命令
 >
-> redis-server -service-stop
+> redis-server --service-stop
 
 #### 2. redis设置密码
 
