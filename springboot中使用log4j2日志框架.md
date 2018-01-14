@@ -3,7 +3,7 @@
 ##### 1. 引用log4j2
 springboot项目中的pom文件中的**spring-boot-starter-web**包中有**spring-boot-starter**引用，默认的日志框架引用在**spring-boot-starter**中，默认的是logback框架。使用log4j2需先排除logback依赖。pom文件中按如下修改：
 ```
-<dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 			<exclusions>
