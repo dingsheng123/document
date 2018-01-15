@@ -46,7 +46,7 @@ spring.mvc.static-path-pattern=/**
 spring.resources.static-locations=classpath:/static/
 ```
 
-在新建的html文件中引用bootstrap
+在新建的html文件中引用bootstrap，一个简单的登陆页面
 ```
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
@@ -58,22 +58,57 @@ spring.resources.static-locations=classpath:/static/
     <title>login</title>
     <link rel="stylesheet" th:href="@{bootstrap/css/bootstrap.min.css}"/>
     <link rel="stylesheet" th:href="@{css/login.css}"/>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <style>
+        .col-center-block {
+            float: none;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .container {
+            display: table;
+            height: 100%;
+            margin-top: 200px;
+        }
+
+        .row {
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+    </style>
 </head>
-<body>
+<body th:style="'background:url('+ @{images/012.png} +'); background-size:100%;'">
 <div class="container">
-    <form class="form-signin" th:action="@{/login}" method="post">
-        <h2 class="form-signin-heading">Please login</h2>
-        <label for="name" class="sr-only">username</label>
-        <input type="text" id="name" name="username" class="form-control" placeholder="username" required="true" autofocus="true"/>
-        <label for="password" class="sr-only">Password</label>
-        <input type="password" id="password" name="password" class="form-control" placeholder="Password" required="true"/>
-        <div class="checkbox">
-            <label>
-                <input type="checkbox" value="remember-me" /> Remember me
-            </label>
+    <div class="row">
+        <div class="well col-xs-6 col-md-4 col-center-block">
+            <form class="form-horizontal" th:action="@{/login}" th:method="post">
+                <h3 class="form-signin-heading">请登录</h3>
+                <label for="username" class="sr-only">用户名</label>
+                <input type="text" id="username" class="form-control" placeholder="用户名" required="true"
+                       autofocus="true"/>
+                <label for="inputPassword" class="sr-only" style="margin-top: 20px">密码</label>
+                <input type="password" id="inputPassword" style="margin-top: 20px" class="form-control" placeholder="密码"
+                       required="true"/>
+                <div class="checkbox" style="margin-top: 10px">
+                    <label>
+                        <input type="checkbox" value="remember-me"/>记住我
+                        <a href="#" style="margin-left: 220px">注册</a>
+                    </label>
+                </div>
+                <button class="btn btn-lg btn-primary btn-block" type="submit" style="margin-top: 15px">登录</button>
+            </form>
         </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">login</button>
-    </form>
+    </div>
 </div>
 <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery-3.2.1.min.js"></script>
 <script th:src="@{bootstrap/js/bootstrap.min.js}"></script>
